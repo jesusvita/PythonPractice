@@ -1,5 +1,6 @@
 import pygame
 import time
+import random
 
 # intialize pygame
 pygame.init()
@@ -23,8 +24,9 @@ clock = pygame.time.Clock()
 
 # size of block
 block_size = 10
+apple = 10
 
-FPS = 30
+FPS = 10
 
 font = pygame.font.SysFont(None, 25)
 
@@ -46,6 +48,10 @@ def gameLoop():
     lead_x_change = 0
     lead_y_change = 0
 
+    appleWidth = random.randint(0, display_width)
+    appleHeight = random.randint(0 , display_height)
+
+
     while not gameExit:
 
         while gameOver == True:
@@ -62,6 +68,7 @@ def gameLoop():
                             gameLoop()
 
 
+
         for event in pygame.event.get():
 
             #If the user quits, exit the game
@@ -71,29 +78,43 @@ def gameLoop():
             # Controller
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_LEFT:
-                    lead_x_change = -block_size
+                    lead_x_change = -10
                     lead_y_change = 0
                 elif event.key == pygame.K_RIGHT:
-                    lead_x_change = block_size
+                    lead_x_change = 10
                     lead_y_change = 0
                 elif event.key == pygame.K_UP:
-                    lead_y_change = -block_size
+                    lead_y_change = -10
                     lead_x_change = 0
                 elif event.key == pygame.K_DOWN:
-                    lead_y_change = block_size
+                    lead_y_change = 10
                     lead_x_change = 0
+                elif event.key == pygame.K_x:
+                    appleWidth = random.randint(0, display_width)
+                    appleHeight = random.randint(0, display_height)
+
+
 
             # Condition to end game
             if lead_x >= display_width or lead_x < 10 or lead_y >= display_height or lead_y < 10:
                 gameOver = True
+            elif lead_x == appleWidth + block_size:
+                appleWidth = random.randint(0, display_width)
+                appleHeight = random.randint(0, display_height)
+
+
 
         lead_x += lead_x_change
         lead_y += lead_y_change
 
+
         # change the background color
         gameDisplay.fill(white)
+
         # draw a box
         pygame.draw.rect(gameDisplay, black, [lead_x, lead_y, block_size, block_size])
+        pygame.draw.rect(gameDisplay, red, [appleWidth, appleHeight, apple, apple])
+
 
         pygame.display.update()
 
