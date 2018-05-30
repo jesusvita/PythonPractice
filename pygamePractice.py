@@ -48,8 +48,8 @@ def gameLoop():
     lead_x_change = 0
     lead_y_change = 0
 
-    appleWidth = random.randint(0, display_width)
-    appleHeight = random.randint(0 , display_height)
+    appleWidth = round(random.randrange(0, display_width)/ 10.0) * 10.0
+    appleHeight = round(random.randrange(0 , display_height)/ 10.0) * 10.0
 
 
     while not gameExit:
@@ -90,17 +90,15 @@ def gameLoop():
                     lead_y_change = 10
                     lead_x_change = 0
                 elif event.key == pygame.K_x:
-                    appleWidth = random.randint(0, display_width)
-                    appleHeight = random.randint(0, display_height)
+                    appleWidth = round(random.randrange(0, display_width)/ 10.0) * 10.0
+                    appleHeight = round(random.randrange(0 , display_height)/ 10.0) * 10.0
 
 
 
             # Condition to end game
             if lead_x >= display_width or lead_x < 10 or lead_y >= display_height or lead_y < 10:
                 gameOver = True
-            elif lead_x == appleWidth + block_size:
-                appleWidth = random.randint(0, display_width)
-                appleHeight = random.randint(0, display_height)
+
 
 
 
@@ -112,11 +110,13 @@ def gameLoop():
         gameDisplay.fill(white)
 
         # draw a box
-        pygame.draw.rect(gameDisplay, black, [lead_x, lead_y, block_size, block_size])
         pygame.draw.rect(gameDisplay, red, [appleWidth, appleHeight, apple, apple])
-
-
+        pygame.draw.rect(gameDisplay, black, [lead_x, lead_y, block_size, block_size])
         pygame.display.update()
+
+        if lead_x == appleWidth and lead_y == appleHeight:
+            appleWidth = round(random.randrange(0, display_width)/ 10.0) * 10.0
+            appleHeight = round(random.randrange(0 , display_height)/ 10.0) * 10.0
 
         clock.tick(FPS)
 
