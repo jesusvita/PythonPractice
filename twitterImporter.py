@@ -3,19 +3,20 @@ import re
 from bs4 import BeautifulSoup
 
 
-url = 'https://twitter.com/paulavalb'
+url = 'https://twitter.com/TheRock'
 r = requests.get(url)
 r_html = r.text
 soup = BeautifulSoup(r_html, 'html.parser')
-print(soup)
+#print(soup)
 
 
-comment_box = soup.find_all(class_='FullNameGroup')
-print(comment_box)
+comment_box = soup.find_all(class_='TweetTextSize')
+#print(comment_box)
 name_box = soup.find_all('span', attrs={'class': 'FullNameGroup'})
-print(name_box)
+#print(name_box)
 nameTag_box = soup.find_all('span', attrs={'class': 'FullNameGroup'})
-time_box = soup.find_all('a', attrs={'class': 'tweet-timestamp js-permalink js-nav js-tooltip'})
+time_box = soup.find_all('p', attrs={'class': 'TweetTextSize TweetTextSize--normal js-tweet-text tweet-text'})
+#print(time_box)
 
 #if not comment_box:
 #    print("This account is private")
@@ -33,6 +34,6 @@ for i in comment_box:
     print(comment)
     timeRegex = re.compile(r'\d+(:)\d+\s\w+\s(-)\s\d+\s\w+\s\d+')
     time = timeRegex.search(time)
-    print(time.group())
+    #print(time.groups())
     print('\n\n')
     x += 1
