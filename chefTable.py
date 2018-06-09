@@ -1,5 +1,7 @@
 import time
+import datetime
 import random
+from random import randint
 import tkinter as tk
 from tkinter import *
 from tkinter import ttk
@@ -7,13 +9,15 @@ from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.support.ui import Select
 
+
 # Functions
 def chef_table_fill_out():
     # take in all the data inputted by the user and apply it to the website
     # for this functions I will have it take in a list
 
     # declaring the chrome driver
-    chromedriver = r"C:\Users\Jesus\Desktop\python\driver\chromedriver.exe"
+    # gonna make it work in both mac and pc
+    chromedriver = r"/Users/jesus/Desktop/PythonPractice/driver/chromedriver 2"
     driver = webdriver.Chrome(chromedriver)
 
     # timeout if not loaded
@@ -25,6 +29,8 @@ def chef_table_fill_out():
     # setting a wait time before inputting to make sure everything is loaded
     driver.implicitly_wait(30)
 
+    area_codes = ["786", "305", "954", "754"]
+    time = datetime.datetime.now()
 
     f_name = driver.find_element_by_id('First_Nm').send_keys(str(f_name_entry.get()))
     l_name = driver.find_element_by_id('Last_Nm').send_keys(str(l_name_entry.get()))
@@ -36,13 +42,25 @@ def chef_table_fill_out():
     state = Select(driver.find_element_by_id('State')).select_by_value(str(state_entry.get()))
     zip_code = driver.find_element_by_id('Zip').send_keys(str(zip_code_entry.get()))
 
-    birthdate_month = Select(driver.find_element_by_id('bdaymonth')).select_by_value("07")
-    birthdate_day = Select(driver.find_element_by_id('bdayday')).select_by_value("7")
-    birthdate_year = Select(driver.find_element_by_id('bdayyear')).select_by_value("1990")
-    favorite_location = Select(driver.find_element_by_id('store_code')).select_by_value("1053")
-    phone_number_1 = driver.find_element_by_id('phonenum-1').send_keys('954')
-    phone_number_2 = driver.find_element_by_id('phonenum-2').send_keys('663')
-    phone_number_3 = driver.find_element_by_id('phonenum-3').send_keys('2294')
+
+    # have it set to put the date the day after today
+    bmonth = str(time.month)
+    bday = str(time.day + 1)
+    print("0" + bmonth)
+    print(bday)
+    n = random.SystemRandom()
+
+    birthdate_month = Select(driver.find_element_by_id('bdaymonth')).select_by_value(bmonth)
+    birthdate_day = Select(driver.find_element_by_id('bdayday')).select_by_value("2")
+    birthdate_year = Select(driver.find_element_by_id('bdayyear')).select_by_value(str(n.randint(1979, 1999)))
+
+    # always set to coral springs
+    favorite_location = Select(driver.find_element_by_id('store_code')).select_by_value("1065")
+
+    # add option to include or not
+    phone_number_1 = driver.find_element_by_id('phonenum-1').send_keys(random.choice(area_codes))
+    phone_number_2 = driver.find_element_by_id('phonenum-2').send_keys(str(n.randint(100, 999)))
+    phone_number_3 = driver.find_element_by_id('phonenum-3').send_keys(str(n.randint(1000, 9999)))
 
 
 def display():
@@ -100,6 +118,7 @@ phone_number_entry.grid(column=1, row=9)
 
 button = Button(window, command = chef_table_fill_out, text="OK").grid(column = 0, row = 10)
 
+# can just pick the first option for the later section, but we should make it random
 
 window.mainloop()
 
