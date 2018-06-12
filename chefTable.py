@@ -12,10 +12,13 @@ from selenium.webdriver.support.ui import Select
 
 # Functions
 def chef_table_fill_out():
-    # take in all the data inputted by the user and apply it to the website
-    # for this functions I will have it take in a list
 
-    # declaring the chrome driver
+
+    def phone_number_included():
+        phone_number_1 = driver.find_element_by_id('phonenum-1').send_keys(random.choice(area_codes))
+        phone_number_2 = driver.find_element_by_id('phonenum-2').send_keys(str(n.randint(100, 999)))
+        phone_number_3 = driver.find_element_by_id('phonenum-3').send_keys(str(n.randint(1000, 9999)))
+
     # gonna make it work in both mac and pc
     chromedriver = r"/Users/jesus/Desktop/PythonPractice/driver/chromedriver 2"
     driver = webdriver.Chrome(chromedriver)
@@ -23,7 +26,6 @@ def chef_table_fill_out():
     # timeout if not loaded
     driver.set_page_load_timeout(30)
 
-    # website to input the information too
     driver.get("http://profile.benihana.com/registration/")
 
     # setting a wait time before inputting to make sure everything is loaded
@@ -46,22 +48,23 @@ def chef_table_fill_out():
     # have it set to put the date the day after today
     bmonth = str(time.month)
     bday = str(time.day + 1)
-    print("0" + bmonth)
-    print(bday)
     n = random.SystemRandom()
 
-    birthdate_month = Select(driver.find_element_by_id('bdaymonth')).select_by_value(bmonth)
-    birthdate_day = Select(driver.find_element_by_id('bdayday')).select_by_value("2")
+    birthdate_month = Select(driver.find_element_by_id('bdaymonth')).select_by_value("0" + bmonth)
+    birthdate_day = Select(driver.find_element_by_id('bdayday')).select_by_value(bday)
     birthdate_year = Select(driver.find_element_by_id('bdayyear')).select_by_value(str(n.randint(1979, 1999)))
 
     # always set to coral springs
     favorite_location = Select(driver.find_element_by_id('store_code')).select_by_value("1065")
 
-    # add option to include or not
-    phone_number_1 = driver.find_element_by_id('phonenum-1').send_keys(random.choice(area_codes))
-    phone_number_2 = driver.find_element_by_id('phonenum-2').send_keys(str(n.randint(100, 999)))
-    phone_number_3 = driver.find_element_by_id('phonenum-3').send_keys(str(n.randint(1000, 9999)))
+    if(num_included1 == True):
+        phone_number_included()
 
+
+
+    # add option to include or not
+    # need a button that can be turn on and off so that I can create a statement to
+    # determine whether or not to run is pice of code
 
 def display():
 
@@ -77,6 +80,8 @@ def display():
     favorite_location_label = tk.Label(text = "Favorite Location: ").grid(column=0, row=8)
     phone_number_label = tk.Label(text = "Phone Number: (###-###-####)").grid(column=0, row=9)
 
+def num_included():
+    num_included1 = True
 
 # create an organize list that will keep all information the user will input to be used to write to the website
 user_input = []
@@ -116,9 +121,12 @@ birthdate_entry.grid(column=1, row=7)
 favorite_location_entry.grid(column=1, row=8)
 phone_number_entry.grid(column=1, row=9)
 
+num_included1 = False
 button = Button(window, command = chef_table_fill_out, text="OK").grid(column = 0, row = 10)
-
+var1 = IntVar()
+Checkbutton(window, text="Include phone number", variable=var1, command = num_included).grid(row=9, sticky=W)
 # can just pick the first option for the later section, but we should make it random
+
 
 window.mainloop()
 
