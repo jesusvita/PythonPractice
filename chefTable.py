@@ -8,6 +8,7 @@ from tkinter import ttk
 from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.support.ui import Select
+import os
 
 
 # Functions
@@ -20,7 +21,8 @@ def chef_table_fill_out():
         phone_number_3 = driver.find_element_by_id('phonenum-3').send_keys(str(n.randint(1000, 9999)))
 
     # gonna make it work in both mac and pc
-    chromedriver = r"/Users/jesus/Desktop/PythonPractice/driver/chromedriver 2"
+    # chromedriver = r"/Users/jesus/Desktop/PythonPractice/driver/chromedriver 2"
+    chromedriver = r"C:\Users\Jesus\Desktop\python\driver\chromedriver.exe"
     driver = webdriver.Chrome(chromedriver)
 
     # timeout if not loaded
@@ -33,23 +35,36 @@ def chef_table_fill_out():
 
     area_codes = ["786", "305", "954", "754"]
     time = datetime.datetime.now()
-
-    f_name = driver.find_element_by_id('First_Nm').send_keys(str(f_name_entry.get()))
-    l_name = driver.find_element_by_id('Last_Nm').send_keys(str(l_name_entry.get()))
-    email_address = driver.find_element_by_id('Email_Address').send_keys(str(email_entry.get()))
-    email_address_confirm = driver.find_element_by_id('Cnfm_Email_Address').send_keys(str(email_entry.get()))
-    address_line_1 = driver.find_element_by_id('AddressLine1').send_keys(str(address_entry.get()))
-    address_line_2 = driver.find_element_by_id('AddressLine2').send_keys('')
-    city = driver.find_element_by_id('City').send_keys(str(city_entry.get()))
-    state = Select(driver.find_element_by_id('State')).select_by_value(str(state_entry.get()))
-    zip_code = driver.find_element_by_id('Zip').send_keys(str(zip_code_entry.get()))
-
+    name_list = open("names.txt").read().splitlines()
+    line = random.choice(name_list)
+    name_regex = re.compile(r'(\w*),\s(\w*)')
+    names = name_regex.search(line)
 
     # have it set to put the date the day after today
     bmonth = str(time.month)
     bday = str(time.day + 1)
     n = random.SystemRandom()
 
+    house_number = str(n.randint(100, 9999))
+    directions = ['E', 'N', 'W', 'S', 'SE','NE','SW','NW']
+    street_number = str(n.randint(1, 190))
+    street_type = ['AVE', 'BLVD', 'CT', 'PL', 'ST', 'TER', 'LN']
+
+    address = house_number + " " + random.choice(directions) + " " + street_number + " " + random.choice(street_type)
+
+    f_name = driver.find_element_by_id('First_Nm').send_keys(str(names.group(2)))
+    l_name = driver.find_element_by_id('Last_Nm').send_keys(str(names.group(1)))
+    email_address = driver.find_element_by_id('Email_Address').send_keys(str(email_entry.get()))
+    email_address_confirm = driver.find_element_by_id('Cnfm_Email_Address').send_keys(str(email_entry.get()))
+
+    # Address
+    address_line_1 = driver.find_element_by_id('AddressLine1').send_keys(address)
+    address_line_2 = driver.find_element_by_id('AddressLine2').send_keys('')
+    city = driver.find_element_by_id('City').send_keys('Miami')
+    state = Select(driver.find_element_by_id('State')).select_by_value('FL')
+    zip_code = driver.find_element_by_id('Zip').send_keys(str(n.randint(33101, 33299)))
+
+    # Birthdate
     birthdate_month = Select(driver.find_element_by_id('bdaymonth')).select_by_value("0" + bmonth)
     birthdate_day = Select(driver.find_element_by_id('bdayday')).select_by_value(bday)
     birthdate_year = Select(driver.find_element_by_id('bdayyear')).select_by_value(str(n.randint(1979, 1999)))
@@ -57,8 +72,13 @@ def chef_table_fill_out():
     # always set to coral springs
     favorite_location = Select(driver.find_element_by_id('store_code')).select_by_value("1065")
 
-    if(num_included1 == True):
-        phone_number_included()
+    driver.find_element_by_xpath("//*[@id='chefRegi']/fieldset[2]/div/div[1]/label[3]/label/span").click()
+    driver.find_element_by_xpath("//*[@id='chefRegi']/fieldset[2]/div/div[2]/span[2]/label/label/span").click()
+    Select(driver.find_element_by_id('visitFreq')).select_by_value("1M")
+    driver.find_element_by_xpath("//*[@id='favoriteDishesSortableList']/li[1]/label/label/span").click()
+    driver.find_element_by_xpath("//*[@id='chefRegi']/fieldset[2]/div/div[5]/label[2]/label/span").click()
+    driver.find_element_by_xpath("//*[@id='chefRegi']/fieldset[2]/div/div[6]/span[3]/label/label/span").click()
+    driver.find_element_by_xpath("//*[@id='chefRegi']/fieldset[2]/div/div[7]/label[2]/label/span").click()
 
 
 
@@ -69,19 +89,16 @@ def chef_table_fill_out():
 def display():
 
     # labels
-    f_name_label = tk.Label(text = "First Name: ").grid(column=0, row=0)
-    l_name_label = tk.Label(text = "Last Name: ").grid(column=0, row=1)
+    # f_name_label = tk.Label(text = "First Name: ").grid(column=0, row=0)
+    # l_name_label = tk.Label(text = "Last Name: ").grid(column=0, row=1)
     email_label = tk.Label(text = "Email Address: ").grid(column=0, row=2)
-    address_label = tk.Label(text = "Address: ").grid(column=0, row=3)
-    city_label = tk.Label(text = "City: ").grid(column=0, row=4)
-    state_label = tk.Label(text = "State: ").grid(column=0, row=5)
-    zip_code_label = tk.Label(text = "Zip Code: ").grid(column=0, row=6)
-    birthdate_label = tk.Label(text = "Birthdate: (mm/dd/yyyy)").grid(column=0, row=7)
-    favorite_location_label = tk.Label(text = "Favorite Location: ").grid(column=0, row=8)
-    phone_number_label = tk.Label(text = "Phone Number: (###-###-####)").grid(column=0, row=9)
-
-def num_included():
-    num_included1 = True
+    # address_label = tk.Label(text = "Address: ").grid(column=0, row=3)
+    # city_label = tk.Label(text = "City: ").grid(column=0, row=4)
+    # state_label = tk.Label(text = "State: ").grid(column=0, row=5)
+    # zip_code_label = tk.Label(text = "Zip Code: ").grid(column=0, row=6)
+    # birthdate_label = tk.Label(text = "Birthdate: (mm/dd/yyyy)").grid(column=0, row=7)
+    # favorite_location_label = tk.Label(text = "Favorite Location: ").grid(column=0, row=8)
+    # phone_number_label = tk.Label(text = "Phone Number: (###-###-####)").grid(column=0, row=9)
 
 # create an organize list that will keep all information the user will input to be used to write to the website
 user_input = []
@@ -98,33 +115,32 @@ window.title("Chef's Table Filler")
 window.geometry("400x400")
 
 display()
-f_name_entry = tk.Entry()
-l_name_entry = tk.Entry()
+#f_name_entry = tk.Entry()
+#l_name_entry = tk.Entry()
 email_entry = tk.Entry()
-address_entry = tk.Entry()
-city_entry = tk.Entry()
-state_entry = ttk.Combobox(window)
-state_entry["values"] = States
-state_entry.current(9)
-zip_code_entry = tk.Entry()
-birthdate_entry = tk.Entry()
-favorite_location_entry = tk.Entry()
-phone_number_entry = tk.Entry()
-f_name_entry.grid(column=1, row=0)
-l_name_entry.grid(column=1, row=1)
+#address_entry = tk.Entry()
+#city_entry = tk.Entry()
+#state_entry = ttk.Combobox(window)
+#state_entry["values"] = States
+#state_entry.current(9)
+#zip_code_entry = tk.Entry()
+#birthdate_entry = tk.Entry()
+#favorite_location_entry = tk.Entry()
+#phone_number_entry = tk.Entry()
+#f_name_entry.grid(column=1, row=0)
+#l_name_entry.grid(column=1, row=1)
 email_entry.grid(column=1, row=2)
-address_entry.grid(column=1, row=3)
-city_entry.grid(column=1, row=4)
-state_entry.grid(column=1, row=5)
-zip_code_entry.grid(column=1, row=6)
-birthdate_entry.grid(column=1, row=7)
-favorite_location_entry.grid(column=1, row=8)
-phone_number_entry.grid(column=1, row=9)
+#address_entry.grid(column=1, row=3)
+#city_entry.grid(column=1, row=4)
+#state_entry.grid(column=1, row=5)
+#zip_code_entry.grid(column=1, row=6)
+#birthdate_entry.grid(column=1, row=7)
+#favorite_location_entry.grid(column=1, row=8)
+#phone_number_entry.grid(column=1, row=9)
 
-num_included1 = False
+
 button = Button(window, command = chef_table_fill_out, text="OK").grid(column = 0, row = 10)
-var1 = IntVar()
-Checkbutton(window, text="Include phone number", variable=var1, command = num_included).grid(row=9, sticky=W)
+
 # can just pick the first option for the later section, but we should make it random
 
 
