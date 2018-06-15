@@ -13,20 +13,56 @@ import pyautogui
 
 
 # Functions
-def chef_table_fill_out():
+def get_emails():
+    email_list = open("emails.txt").read()
+    emailRegex = re.compile(r'''(
+        [a-zA-Z0-9._%+-] +              # username
+        @                               # a symbol
+        [a-zA-Z0-9.-]  +               # domain name
+        \.[a-zA-Z]{2,4}  # dot-somthing
+        )''', re.X)
 
+    return emailRegex.findall(email_list)
 
-    def phone_number_included():
-        phone_number_1 = driver.find_element_by_id('phonenum-1').send_keys(random.choice(area_codes))
-        phone_number_2 = driver.find_element_by_id('phonenum-2').send_keys(str(n.randint(100, 999)))
-        phone_number_3 = driver.find_element_by_id('phonenum-3').send_keys(str(n.randint(1000, 9999)))
+def get_random_name():
+    name_list = open("names.txt").read().splitlines()
+    random_line = random.choice(name_list)
+    name_regex = re.compile(r'(\w*),\s(\w*)')
+    return name_regex.search(random_line)
 
+def get_random_address():
+    house_number = str(n.randint(100, 9999))
+    directions = ['E', 'N', 'W', 'S', 'SE','NE','SW','NW']
+    street_number = str(n.randint(1, 190))
+    street_type = ['AVE', 'BLVD', 'CT', 'PL', 'ST', 'TER', 'LN']
 
+    return house_number + " " + random.choice(directions) + " " + street_number + " " + random.choice(street_type)
 
-    # gonna make it work in both mac and pc
-    chromedriver = r"/Users/jesus/Desktop/PythonPractice/driver/chromedriver 2"
-    # chromedriver = r"C:\Users\Jesus\Desktop\python\driver\chromedriver.exe"
-    driver = webdriver.Chrome(chromedriver)
+def get_driver(x):
+    if x == 'w':
+        return webdriver.Chrome(r"C:\Users\Jesus\Desktop\python\driver\chromedriver.exe")
+    else:
+        return webdriver.Chrome(r"/Users/jesus/Desktop/PythonPractice/driver/chromedriver 2")
+
+def chef_table_fill_out(email):
+
+    # The website has some kind of detection to prevent fasle account maybe even prevent botting
+    # Luckily with this I can trick it to letting me make an account 100%
+    def backspace():
+        driver.find_element_by_id('Email_Address').send_keys(str(Keys.BACKSPACE))
+        driver.find_element_by_id('Email_Address').send_keys(str(Keys.BACKSPACE))
+        driver.find_element_by_id('Email_Address').send_keys(str(Keys.BACKSPACE))
+        driver.find_element_by_id('Email_Address').send_keys(str(Keys.BACKSPACE))
+        pyautogui.PAUSE = 1
+        pyautogui.press('.')
+        pyautogui.PAUSE = 1
+        pyautogui.press('c')
+        pyautogui.PAUSE = 1
+        pyautogui.press('o')
+        pyautogui.PAUSE = 1
+        pyautogui.press('m')
+
+    driver = get_driver('w')
 
     # timeout if not loaded
     driver.set_page_load_timeout(30)
@@ -36,31 +72,21 @@ def chef_table_fill_out():
     # setting a wait time before inputting to make sure everything is loaded
     driver.implicitly_wait(30)
 
-    area_codes = ["786", "305", "954", "754"]
-    time = datetime.datetime.now()
-    name_list = open("names.txt").read().splitlines()
-    line = random.choice(name_list)
-    name_regex = re.compile(r'(\w*),\s(\w*)')
-    names = name_regex.search(line)
+    # Random name
+    name = get_random_name()
 
-    # have it set to put the date the day after today
+    # Birthdate
+    time = datetime.datetime.now()
     bmonth = str(time.month)
     bday = str(time.day + 1)
-    n = random.SystemRandom()
 
-    house_number = str(n.randint(100, 9999))
-    directions = ['E', 'N', 'W', 'S', 'SE','NE','SW','NW']
-    street_number = str(n.randint(1, 190))
-    street_type = ['AVE', 'BLVD', 'CT', 'PL', 'ST', 'TER', 'LN']
+    # Random address
+    address = get_random_address()
 
-    address = house_number + " " + random.choice(directions) + " " + street_number + " " + random.choice(street_type)
-
-    pyautogui.moveTo(1000, 150)
-    pyautogui.click()
-    f_name = driver.find_element_by_id('First_Nm').send_keys(str(names.group(2)))
-    l_name = driver.find_element_by_id('Last_Nm').send_keys(str(names.group(1)))
-    email_address = driver.find_element_by_id('Email_Address').send_keys(str(email_entry.get()))
-    email_address_confirm = driver.find_element_by_id('Cnfm_Email_Address').send_keys(str(email_entry.get()))
+    f_name = driver.find_element_by_id('First_Nm').send_keys(str(name.group(2)))
+    l_name = driver.find_element_by_id('Last_Nm').send_keys(str(name.group(1)))
+    email_address = driver.find_element_by_id('Email_Address').send_keys(str(email))
+    email_address_confirm = driver.find_element_by_id('Cnfm_Email_Address').send_keys(str(email))
 
     # Address
     address_line_1 = driver.find_element_by_id('AddressLine1').send_keys(address)
@@ -77,6 +103,7 @@ def chef_table_fill_out():
     # always set to coral springs
     favorite_location = Select(driver.find_element_by_id('store_code')).select_by_value("1065")
 
+    # Survey
     driver.find_element_by_xpath("//*[@id='chefRegi']/fieldset[2]/div/div[1]/label[3]/label/span").click()
     driver.find_element_by_xpath("//*[@id='chefRegi']/fieldset[2]/div/div[2]/span[2]/label/label/span").click()
     Select(driver.find_element_by_id('visitFreq')).select_by_value("1M")
@@ -85,74 +112,30 @@ def chef_table_fill_out():
     driver.find_element_by_xpath("//*[@id='chefRegi']/fieldset[2]/div/div[6]/span[3]/label/label/span").click()
     driver.find_element_by_xpath("//*[@id='chefRegi']/fieldset[2]/div/div[7]/label[2]/label/span").click()
 
+    # Anti-detection
+    backspace()
 
+    # Submit
+    driver.find_element_by_xpath("//*[@id='submit-btn']").click()
 
-    # add option to include or not
-    # need a button that can be turn on and off so that I can create a statement to
-    # determine whether or not to run is pice of code
+def run():
+    emails = get_emails()
+    for i in emails:
+        chef_table_fill_out(i)
 
-def display():
-
-    # labels
-    # f_name_label = tk.Label(text = "First Name: ").grid(column=0, row=0)
-    # l_name_label = tk.Label(text = "Last Name: ").grid(column=0, row=1)
-    email_label = tk.Label(text = "Email Address: ").grid(column=0, row=2)
-    # address_label = tk.Label(text = "Address: ").grid(column=0, row=3)
-    # city_label = tk.Label(text = "City: ").grid(column=0, row=4)
-    # state_label = tk.Label(text = "State: ").grid(column=0, row=5)
-    # zip_code_label = tk.Label(text = "Zip Code: ").grid(column=0, row=6)
-    # birthdate_label = tk.Label(text = "Birthdate: (mm/dd/yyyy)").grid(column=0, row=7)
-    # favorite_location_label = tk.Label(text = "Favorite Location: ").grid(column=0, row=8)
-    # phone_number_label = tk.Label(text = "Phone Number: (###-###-####)").grid(column=0, row=9)
-
-# create an organize list that will keep all information the user will input to be used to write to the website
-user_input = []
-States = [
-"AK","AL","AR","AZ","CA","CO","CT","DC","DE","FL","GA","GU","HI","IA","ID", "IL","IN","KS","KY","LA","MA","MD","ME","MH","MI"
+States = ["AK","AL","AR","AZ","CA","CO","CT","DC","DE","FL","GA","GU","HI","IA","ID", "IL","IN","KS","KY","LA","MA","MD","ME","MH","MI"
 ,"MN","MO","MS","MT","NC","ND","NE","NH","NJ","NM","NV","NY", "OH","OK","OR","PA","PR","PW","RI","SC","SD","TN","TX","UT","VA"
-,"VI","VT","WA","WI","WV","WY"
-]
-
+,"VI","VT","WA","WI","WV","WY"]
+n = random.SystemRandom()
 
 # GUI
 window = tk.Tk()
 window.title("Chef's Table Filler")
 window.geometry("400x400")
 
-display()
-#f_name_entry = tk.Entry()
-#l_name_entry = tk.Entry()
-email_entry = tk.Entry()
-#address_entry = tk.Entry()
-#city_entry = tk.Entry()
-#state_entry = ttk.Combobox(window)
-#state_entry["values"] = States
-#state_entry.current(9)
-#zip_code_entry = tk.Entry()
-#birthdate_entry = tk.Entry()
-#favorite_location_entry = tk.Entry()
-#phone_number_entry = tk.Entry()
-#f_name_entry.grid(column=1, row=0)
-#l_name_entry.grid(column=1, row=1)
-email_entry.grid(column=1, row=2)
-#address_entry.grid(column=1, row=3)
-#city_entry.grid(column=1, row=4)
-#state_entry.grid(column=1, row=5)
-#zip_code_entry.grid(column=1, row=6)
-#birthdate_entry.grid(column=1, row=7)
-#favorite_location_entry.grid(column=1, row=8)
-#phone_number_entry.grid(column=1, row=9)
+button = Button(window, command = run, text="OK", width = 10, height = 4).grid(row=5, column=0)
 
 
-button = Button(window, command = chef_table_fill_out, text="OK").grid(column = 0, row = 10)
-
-# can just pick the first option for the later section, but we should make it random
 
 
 window.mainloop()
-
-
-#chef_table_fill_out()
-
-# how to get a screenshot
-# driver.get_screenshot_as_file("ChefTableForm.png")
