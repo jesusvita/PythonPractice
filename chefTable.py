@@ -9,6 +9,7 @@ from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.support.ui import Select
 import os
+import pyautogui
 
 
 # Functions
@@ -20,9 +21,11 @@ def chef_table_fill_out():
         phone_number_2 = driver.find_element_by_id('phonenum-2').send_keys(str(n.randint(100, 999)))
         phone_number_3 = driver.find_element_by_id('phonenum-3').send_keys(str(n.randint(1000, 9999)))
 
+
+
     # gonna make it work in both mac and pc
-    # chromedriver = r"/Users/jesus/Desktop/PythonPractice/driver/chromedriver 2"
-    chromedriver = r"C:\Users\Jesus\Desktop\python\driver\chromedriver.exe"
+    chromedriver = r"/Users/jesus/Desktop/PythonPractice/driver/chromedriver 2"
+    # chromedriver = r"C:\Users\Jesus\Desktop\python\driver\chromedriver.exe"
     driver = webdriver.Chrome(chromedriver)
 
     # timeout if not loaded
@@ -52,6 +55,8 @@ def chef_table_fill_out():
 
     address = house_number + " " + random.choice(directions) + " " + street_number + " " + random.choice(street_type)
 
+    pyautogui.moveTo(1000, 150)
+    pyautogui.click()
     f_name = driver.find_element_by_id('First_Nm').send_keys(str(names.group(2)))
     l_name = driver.find_element_by_id('Last_Nm').send_keys(str(names.group(1)))
     email_address = driver.find_element_by_id('Email_Address').send_keys(str(email_entry.get()))
