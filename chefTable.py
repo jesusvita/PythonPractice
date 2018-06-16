@@ -116,7 +116,7 @@ def chef_table_fill_out(email):
     backspace()
 
     # Submit
-    driver.find_element_by_xpath("//*[@id='submit-btn']").click()
+    # driver.find_element_by_xpath("//*[@id='submit-btn']").click()
 
 def run():
     emails = get_emails()
